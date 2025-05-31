@@ -18,7 +18,7 @@ public:
         MaxColsAtCompileTime = Dynamic
     };
 
-    DeformablePreconditioner() {}
+    DeformablePreconditioner() : rows_(0), cols_(0)  {}
 
     template<typename MatType>
     explicit DeformablePreconditioner(const MatType& mat)

@@ -269,6 +269,40 @@ const SparseMatrixElements Deformable<vertex_dim, element_dim>::ElasticForceDiff
 }
 
 template<int vertex_dim, int element_dim>
+const std::vector<MatrixXr> Deformable<vertex_dim, element_dim>::LocalElasticForceDifferential(const VectorXr& q) const {
+    if (!material_) return {};
+
+    const int element_num = mesh_.NumOfElements();
+    const int sample_num = GetNumOfSamplesInElement();
+    // The sequential version:
+    // SparseMatrixElements nonzeros;
+    SparseMatrixElements nonzeros(element_num * sample_num * element_dim * vertex_dim * element_dim * vertex_dim);
+    std::vector<MatrixXr> local_hessians(element_num * sample_num);
+
+    #pragma omp parallel for
+    for (int i = 0; i < element_num; ++i) {
+        const Eigen::Matrix<int, element_dim, 1> vi = mesh_.element(i);
+        const auto deformed = ScatterToElement(q, i);
+        for (int j = 0; j < sample_num; ++j) {
+            const auto F = DeformationGradient(i, deformed, j);
+            MatrixXr dF(vertex_dim * vertex_dim, element_dim * vertex_dim); dF.setZero();
+            for (int s = 0; s < element_dim; ++s)
+                for (int t = 0; t < vertex_dim; ++t) {
+                    const Eigen::Matrix<real, vertex_dim, vertex_dim> dF_single =
+                        Eigen::Matrix<real, vertex_dim, 1>::Unit(t) * finite_element_samples_[i][j].grad_undeformed_sample_weight().row(s);
+                    dF.col(s * vertex_dim + t) += Flatten(dF_single);
+                }
+            const auto dP = material_->StressTensorDifferential(F) * dF;
+            const Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim> df_kd =
+                dP.transpose() * finite_element_samples_[i][j].dF_dxkd_flattened() * element_volume_ / sample_num;
+            // assuming -df_kd is the per element hessian 
+            local_hessians[i * sample_num + j] = df_kd;
+        }
+    }
+    return local_hessians;
+}
+
+template<int vertex_dim, int element_dim>
 const VectorXr Deformable<vertex_dim, element_dim>::ElasticForceDifferential(const VectorXr& q, const VectorXr& dq) const {
     if (!material_) return VectorXr::Zero(dofs_);
 
@@ -365,6 +399,8 @@ void Deformable<vertex_dim, element_dim>::AssignToGlobalDeformable() const {
     global_deformable = this;
     global_vertex_dim = vertex_dim;
     global_element_dim = element_dim;
+    GLOBAL_COUNTER++;
+    // PrintInfo(std::to_string(GLOBAL_COUNTER));
 }
 
 template<int vertex_dim, int element_dim>
@@ -381,5 +417,6 @@ template class Deformable<3, 8>;
 const void* global_deformable = nullptr;
 int global_vertex_dim = 0;
 int global_element_dim = 0;
+int GLOBAL_COUNTER = 0;
 std::map<int, real> global_additional_dirichlet_boundary = std::map<int, real>();
 std::string global_pd_backward_method = "";

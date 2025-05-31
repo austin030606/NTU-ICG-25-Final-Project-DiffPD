@@ -17,7 +17,12 @@ if [ $# -eq 0 ]
 then
     cmake -DPARDISO_AVAILABLE=OFF ..
 else
-    cmake -DPARDISO_AVAILABLE=ON ..
+    # cmake -DPARDISO_AVAILABLE=ON ..
+    cmake \
+  -DPARDISO_AVAILABLE=ON \
+  -DBLAS_LIBRARIES="${CONDA_PREFIX}/lib/libopenblas.so" \
+  -DBLAS_INCLUDE_DIRS="${CONDA_PREFIX}/include" \
+  ..
 fi
 make -j4
 ./diff_pd_demo

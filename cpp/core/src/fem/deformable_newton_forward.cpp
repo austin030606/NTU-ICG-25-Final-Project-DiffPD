@@ -272,10 +272,13 @@ const VectorXr Deformable<vertex_dim, element_dim>::NewtonMatrixOp(const VectorX
     for (const auto& pair : dirichlet_with_friction) dq_w_bonudary(pair.first) = 0;
     const int mat_w_dofs = NumOfPdElementEnergies();
     const int act_w_dofs = NumOfPdMuscleEnergies();
+    // PrintInfo("HERE3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     VectorXr ret = inv_h2m * dq_w_bonudary - (ElasticForceDifferential(q_sol, dq_w_bonudary)
         + PdEnergyForceDifferential(q_sol, dq_w_bonudary, VectorXr::Zero(mat_w_dofs))
         + ActuationForceDifferential(q_sol, a, dq_w_bonudary, VectorXr::Zero(act_dofs_), VectorXr::Zero(act_w_dofs)));
-    for (const auto& pair : dirichlet_with_friction) ret(pair.first) = dq(pair.first);
+    // PrintInfo("HERE4!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        for (const auto& pair : dirichlet_with_friction) ret(pair.first) = dq(pair.first);
+    // PrintInfo("HERE5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     return ret;
 }
 
@@ -297,6 +300,103 @@ const SparseMatrix Deformable<vertex_dim, element_dim>::NewtonMatrix(const Vecto
         if (dirichlet_with_friction.find(row) != dirichlet_with_friction.end()
             || dirichlet_with_friction.find(col) != dirichlet_with_friction.end()) continue;
         nonzeros_new.push_back(Eigen::Triplet<real>(row, col, -val));
+    }
+    for (int i = 0; i < dofs_; ++i) {
+        if (dirichlet_with_friction.find(i) != dirichlet_with_friction.end())
+            nonzeros_new.push_back(Eigen::Triplet<real>(i, i, 1));
+        else
+            nonzeros_new.push_back(Eigen::Triplet<real>(i, i, inv_h2m));
+    }
+    return ToSparseMatrix(dofs_, dofs_, nonzeros_new);
+}
+
+template<int vertex_dim, int element_dim>
+const SparseMatrix Deformable<vertex_dim, element_dim>::ProjectedNewtonMatrix(const VectorXr& q_sol, const VectorXr& a,
+    const real inv_h2m, const std::map<int, real>& dirichlet_with_friction, const bool use_precomputed_data, const bool use_abs) const {
+    const real eps = 0.0;
+    const int element_num = mesh_.NumOfElements();
+    const int sample_num = GetNumOfSamplesInElement();
+
+    // SparseMatrixElements nonzeros = ElasticForceDifferential(q_sol);
+    SparseMatrixElements nonzeros(element_num * sample_num * element_dim * vertex_dim * element_dim * vertex_dim);
+    
+    // get element hessians
+    std::vector<MatrixXr> local_hessians = LocalElasticForceDifferential(q_sol);
+
+    // perform projection to each element hessian
+    #pragma omp parallel for
+    for (int i = 0; i < element_num; ++i) {
+        const Eigen::Matrix<int, element_dim, 1> vi = mesh_.element(i);
+        for (int j = 0; j < sample_num; ++j) {
+            // clamping or abs
+            Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim> H_i = local_hessians[i * sample_num + j];
+
+            bool isDiagonallyDominant = true;
+            for (int k = 0; k < H_i.rows(); ++k) {
+                real off_diag_abs_sum = 0.0;
+                for (int d = 0; d < H_i.cols(); ++d) {
+                    if (k != d)
+                        off_diag_abs_sum += std::abs(H_i(k, d));
+                }
+
+                if (std::abs(H_i(k, k)) < off_diag_abs_sum + 0.00001) {
+                    isDiagonallyDominant = false;
+                    break;
+                }
+            }
+            if (!isDiagonallyDominant) {
+                // Compute eigen-decomposition (of symmetric matrix)
+                Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim>> eig(H_i);
+                Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim> D = eig.eigenvalues().asDiagonal();
+
+                bool all_positive = true;
+                for (int i = 0; i < H_i.rows(); ++i) {
+                    if (use_abs) {
+                        // PrintInfo("use abs");
+                        if (D(i, i) < 0) {
+                            D(i, i) = -D(i, i);
+                            all_positive = false;
+                        }
+                    } else {
+                        // PrintInfo("use clamp");
+                        if (D(i, i) < eps) {
+                            D(i, i) = eps;
+                            all_positive = false;
+                        }
+                    }
+                }
+
+                if (!all_positive) {
+                    // Re-assemble matrix using clamped eigenvalues
+                    // PrintInfo("H_i reassembled");
+                    H_i = eig.eigenvectors() * D * eig.eigenvectors().transpose();
+                }
+            }
+            for (int k = 0; k < element_dim; ++k)
+                for (int d = 0; d < vertex_dim; ++d)
+                    for (int s = 0; s < element_dim; ++s)
+                        for (int t = 0; t < vertex_dim; ++t)
+                            nonzeros[i * sample_num * element_dim * vertex_dim * element_dim * vertex_dim
+                                + j * element_dim * vertex_dim * element_dim * vertex_dim
+                                + k * vertex_dim * element_dim * vertex_dim
+                                + d * element_dim * vertex_dim
+                                + s * vertex_dim
+                                + t] = Eigen::Triplet<real>(vertex_dim * vi(k) + d, vertex_dim * vi(s) + t,
+                                    H_i(s * vertex_dim + t, k * vertex_dim + d));
+                            // Below is the sequential version:
+                            // nonzeros.push_back(Eigen::Triplet<real>(vertex_dim * vi(k) + d,
+                            //     vertex_dim * vi(s) + t, df_kd(s * vertex_dim + t, k * vertex_dim + d)));
+        }
+    }
+
+    SparseMatrixElements nonzeros_new;
+    for (const auto& element : nonzeros) {
+        const int row = element.row();
+        const int col = element.col();
+        const real val = element.value();
+        if (dirichlet_with_friction.find(row) != dirichlet_with_friction.end()
+            || dirichlet_with_friction.find(col) != dirichlet_with_friction.end()) continue;
+        nonzeros_new.push_back(Eigen::Triplet<real>(row, col, val));
     }
     for (int i = 0; i < dofs_; ++i) {
         if (dirichlet_with_friction.find(i) != dirichlet_with_friction.end())

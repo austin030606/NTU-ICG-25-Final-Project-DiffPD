@@ -70,6 +70,7 @@ public:
     const VectorXr ElasticForce(const VectorXr& q) const;
     const VectorXr ElasticForceDifferential(const VectorXr& q, const VectorXr& dq) const;
     const SparseMatrixElements ElasticForceDifferential(const VectorXr& q) const;
+    const std::vector<MatrixXr> LocalElasticForceDifferential(const VectorXr& q) const;
 
     // Add state-based forces.
     void AddStateForce(const std::string& force_type, const std::vector<real>& params);
@@ -221,6 +222,8 @@ private:
         const std::map<int, real>& dirichlet_with_friction, const VectorXr& dq) const;
     const SparseMatrix NewtonMatrix(const VectorXr& q_sol, const VectorXr& a, const real inv_h2m,
         const std::map<int, real>& dirichlet_with_friction, const bool use_precomputed_data) const;
+    const SparseMatrix ProjectedNewtonMatrix(const VectorXr& q_sol, const VectorXr& a, const real inv_h2m,
+        const std::map<int, real>& dirichlet_with_friction, const bool use_precomputed_data, const bool use_abs) const;
     const VectorXr QuasiStaticMatrixOp(const VectorXr& q, const VectorXr& a, const VectorXr& dq) const;
     const SparseMatrix QuasiStaticMatrix(const VectorXr& q, const VectorXr& a) const;
 
@@ -299,6 +302,7 @@ private:
 extern const void* global_deformable;
 extern int global_vertex_dim;
 extern int global_element_dim;
+extern int GLOBAL_COUNTER;
 extern std::map<int, real> global_additional_dirichlet_boundary;
 extern std::string global_pd_backward_method;
 

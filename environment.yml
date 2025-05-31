@@ -78,7 +78,7 @@ dependencies:
   - python=3.8.3=hcff3b4d_2
   - python-dateutil=2.8.1=py_0
   - python_abi=3.8=1_cp38
-  - pytorch=1.4.0=py3.8_cuda10.1.243_cudnn7.6.3_0
+  # - pytorch=1.4.0=py3.8_cuda10.1.243_cudnn7.6.3_0
   - qt=5.9.7=h5867ecd_1
   - readline=8.0=h7b6447c_0
   - requests=2.24.0=py_0
@@ -94,7 +94,7 @@ dependencies:
   - tensorboard=2.2.1=pyh532a8cf_0
   - tensorboard-plugin-wit=1.6.0=py_0
   - tk=8.6.10=hbc83047_0
-  - torchvision=0.5.0=py38_cu101
+  # - torchvision=0.5.0=py38_cu101
   - tornado=6.0.4=py38h7b6447c_1
   - tqdm=4.49.0=pyh9f0ad1d_0
   - trimesh=3.7.14=pyh9f0ad1d_0
@@ -112,4 +112,6 @@ dependencies:
     - scooby==0.5.6
     - tetgen==0.5.1
     - vtk==9.0.1
+    - https://download.pytorch.org/whl/cu101/torch-1.4.0-cp38-cp38-linux_x86_64.whl
+    - https://download.pytorch.org/whl/cu101/torchvision-0.5.0-cp38-cp38-linux_x86_64.whl
 prefix: /home/taodu/libraries/miniconda3/envs/diff_pd

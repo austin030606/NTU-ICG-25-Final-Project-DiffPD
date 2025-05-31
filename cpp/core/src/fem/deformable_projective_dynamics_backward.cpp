@@ -166,6 +166,16 @@ void Deformable<vertex_dim, element_dim>::BackwardProjectiveDynamics(const std::
         }
     }
 
+    bool project_newton = false;
+    if (options.find("project_newton") != options.end()) {
+        project_newton = static_cast<bool>(options.at("project_newton"));
+    }
+
+    bool use_abs = false;
+    if (options.find("use_abs") != options.end()) {
+        use_abs = static_cast<bool>(options.at("use_abs"));
+    }
+
     omp_set_num_threads(thread_ct);
     // Pre-factorize the matrix -- it will be skipped if the matrix has already been factorized.
     SetupProjectiveDynamicsSolver(method, dt, options);
@@ -238,7 +248,18 @@ void Deformable<vertex_dim, element_dim>::BackwardProjectiveDynamics(const std::
     // CheckError(cholesky.info() == Eigen::Success, "Cholesky solver failed.");
     VectorXr dl_drhs_intermediate;
     if (material_) {
-        const SparseMatrix op = NewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data);
+        // SparseMatrix op;
+        // if (options.find("project_newton") != options.end()) {
+        //     bool project_newton = static_cast<bool>(options.at("project_newton"));
+        //     if (project_newton) {
+        //         op = ProjectedNewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data);
+        //     }
+        // } else {
+        //     op = NewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data);
+        // }
+        const SparseMatrix op = project_newton ? ProjectedNewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data, use_abs) : 
+                                                 NewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data);
+        // const SparseMatrix op = NewtonMatrix(q_next, a, inv_h2m, augmented_dirichlet, use_precomputed_data);
         if (EndsWith(method, "pcg")) {
             // The user is using a non-PD material model. Need special treatment.
             // Eigen::SimplicialLDLT<SparseMatrix> cholesky;
@@ -447,6 +468,7 @@ void Deformable<vertex_dim, element_dim>::BackwardProjectiveDynamics(const std::
         }
     }
 
+    // PrintInfo("HERE1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     VectorXr dl_drhs = dl_drhs_intermediate * inv_h2m;
     // Now dl_drhs_free is correct. Working on dl_drhs_fixed next.
     for (const auto& pair: augmented_dirichlet) dl_drhs(pair.first) = dl_dq_next_agg(pair.first);
@@ -458,6 +480,7 @@ void Deformable<vertex_dim, element_dim>::BackwardProjectiveDynamics(const std::
     // dl_drhs_intermediate_free = dl_dq_next_free * inv(C).
     VectorXr adjoint = dl_drhs_intermediate;
     for (const auto& pair : augmented_dirichlet) adjoint(pair.first) = 0;
+    // PrintInfo("HERE2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     const VectorXr dfixed = NewtonMatrixOp(q_next, a, inv_h2m, {}, -adjoint);
     for (const auto& pair : augmented_dirichlet) dl_drhs(pair.first) += dfixed(pair.first);
 
