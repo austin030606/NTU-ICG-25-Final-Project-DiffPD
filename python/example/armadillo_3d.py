@@ -16,7 +16,7 @@ from py_diff_pd.env.armadillo_env_3d import ArmadilloEnv3d
 
 def test_armadillo_3d(verbose):
     seed = 42
-    folder = Path('armadillo_3d')
+    folder = Path('armadillo_3d_final')
     env = ArmadilloEnv3d(seed, folder, {
         'youngs_modulus': 5e5,
         'init_rotate_angle': 0,
@@ -26,10 +26,14 @@ def test_armadillo_3d(verbose):
     deformable = env.deformable()
 
     # Setting thread number.
-    thread_cts = [6,]
-    methods = ('pd_eigen_pcg', 'newton_cholesky')
+    thread_cts = [8,]
+    methods = ('pd_eigen_pcg_original', 'pd_eigen_pcg_proj_abs', 'pd_eigen_pcg_proj_clmp', 'newton_cholesky')
     opts = ({ 'max_pd_iter': 5000, 'max_ls_iter': 10, 'abs_tol': 1e-9, 'rel_tol': 1e-4, 'verbose': 0, 'thread_ct': 4,
-                'use_bfgs': 1, 'bfgs_history_size': 10 },
+                'use_bfgs': 1, 'bfgs_history_size': 10, 'project_newton': 0 },
+            { 'max_pd_iter': 5000, 'max_ls_iter': 10, 'abs_tol': 1e-9, 'rel_tol': 1e-4, 'verbose': 0, 'thread_ct': 4,
+                'use_bfgs': 1, 'bfgs_history_size': 10, 'project_newton': 1, 'use_abs': 1 },
+            { 'max_pd_iter': 5000, 'max_ls_iter': 10, 'abs_tol': 1e-9, 'rel_tol': 1e-4, 'verbose': 0, 'thread_ct': 4,
+                'use_bfgs': 1, 'bfgs_history_size': 10, 'project_newton': 1, 'use_abs': 0 },
             { 'max_newton_iter': 5000, 'max_ls_iter': 10, 'abs_tol': 1e-9, 'rel_tol': 1e-4, 'verbose': 0, 'thread_ct': 4 },)
 
     # Compute the initial state.

@@ -131,8 +131,12 @@ class EnvBase:
         assert dt > 0
         assert frame_num > 0
         if isinstance(method, str):
-            forward_method = method
-            backward_method = method
+            if method.startswith('pd_eigen_pcg'):
+                forward_method = 'pd_eigen_pcg'
+                backward_method = 'pd_eigen_pcg'
+            else:
+                forward_method = method
+                backward_method = method
         elif isinstance(method, tuple):
             assert len(method) == 2
             forward_method, backward_method = method
