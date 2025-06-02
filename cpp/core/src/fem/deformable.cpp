@@ -277,7 +277,7 @@ const std::vector<MatrixXr> Deformable<vertex_dim, element_dim>::LocalElasticFor
     // The sequential version:
     // SparseMatrixElements nonzeros;
     SparseMatrixElements nonzeros(element_num * sample_num * element_dim * vertex_dim * element_dim * vertex_dim);
-    std::vector<MatrixXr> local_hessians(element_num * sample_num);
+    std::vector<MatrixXr> local_hessians(element_num);
 
     #pragma omp parallel for
     for (int i = 0; i < element_num; ++i) {
@@ -295,8 +295,12 @@ const std::vector<MatrixXr> Deformable<vertex_dim, element_dim>::LocalElasticFor
             const auto dP = material_->StressTensorDifferential(F) * dF;
             const Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim> df_kd =
                 dP.transpose() * finite_element_samples_[i][j].dF_dxkd_flattened() * element_volume_ / sample_num;
-            // assuming -df_kd is the per element hessian 
-            local_hessians[i * sample_num + j] = df_kd;
+            // assuming df_kd is the per element hessian
+            if (j == 0) {
+                local_hessians[i] = df_kd;
+            } else {
+                local_hessians[i] += df_kd;
+            }
         }
     }
     return local_hessians;
