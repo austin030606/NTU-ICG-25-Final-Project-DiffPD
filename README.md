@@ -52,7 +52,7 @@ python armadillop_mesh_resolution_vs_runtime_error.py
 
 After running the Duck3D example, you can generate the corresponding figures using:
 ```
-python python/example/print_duck_fig.py
+python print_duck_fig.py
 ```
 
 
