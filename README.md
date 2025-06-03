@@ -17,6 +17,10 @@ conda activate diff_pd
 
 If you are cloning the repository, make sure to specify --recursive
 
+If you encounter errors like "libstdc++.so.6: version 'GLIBCXX_3.4.32' not found (required by ../py_diff_pd/core/_py_diff_pd_core.so)", you can try running:
+
+`conda install -c conda-forge libgcc-ng libstdcxx-ng`
+
 ## Examples
 Navigate to the `python/example` path and run `python [example_name].py` where the `example_name` could be the following names. By default, we use 8 threads in OpenMP to run PD simulation. This number can be modified in most of the scripts below by changing the `thread_ct` variable. It is recommended to set `thread_ct` to be **strictly smaller** than the number of cores available.
 
