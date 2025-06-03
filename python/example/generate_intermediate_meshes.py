@@ -28,8 +28,8 @@ def subdivide_to_target(mesh, target_faces, method="midpoint"):
     return mesh
 
 if __name__ == "__main__":
-    low = "/home/akinesia112/diff_pd_public/asset/mesh/armadillo_low_res.obj"
-    high = "/home/akinesia112/diff_pd_public/asset/mesh/armadillo_high_res.obj"
+    low = "../../asset/mesh/armadillo_low_res.obj"
+    high = "../../asset/mesh/armadillo_high_res.obj"
 
     n_low  = count_faces(low)
     n_high = count_faces(high)
@@ -46,14 +46,14 @@ if __name__ == "__main__":
     # Make mid1
     print(f"Generating mid1 ({mid1} faces) via subdivision…")
     m1 = subdivide_to_target(mesh_low, mid1, method="loop")
-    o3d.io.write_triangle_mesh("/home/akinesia112/diff_pd_public/asset/mesh/armadillo_mid1.obj", m1)
+    o3d.io.write_triangle_mesh("../../asset/mesh/armadillo_mid1.obj", m1)
     print(f"  → got {len(m1.triangles)} faces\n")
 
     # For mid2, just start again from low
     print(f"Generating mid2 ({mid2} faces) via subdivision…")
     mesh_low = o3d.io.read_triangle_mesh(low)
     m2 = subdivide_to_target(mesh_low, mid2, method="loop")
-    o3d.io.write_triangle_mesh("/home/akinesia112/diff_pd_public/asset/mesh/armadillo_mid2.obj", m2)
+    o3d.io.write_triangle_mesh("../../asset/mesh/armadillo_mid2.obj", m2)
     print(f"  → got {len(m2.triangles)} faces\n")
 
     print("Done generating mid1 and mid2")

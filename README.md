@@ -43,10 +43,13 @@ python armadillo_dt_sweep.py
 python armadillo_param_sweep_dt_pd_maxpd_tol.py
 
 # Exp:3 Runtime vs Mesh Resolution
+conda create -n o3d_env python=3.10
+conda activate o3d_env
 conda install -c conda-forge open3d=0.18.0
-# Generate Two Intermediate Meshes
+# Generate Two Intermediate Meshes, run in a different environment since a newer version of python is needed for open3d=0.18.0
 python generate_intermediate_meshes.py
 # Runtime vs Mesh Resolution
+conda activate diff_pd
 python armadillop_mesh_resolution_vs_runtime_error.py
 ```
 
