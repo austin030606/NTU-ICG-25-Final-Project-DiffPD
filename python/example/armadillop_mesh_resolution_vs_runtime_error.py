@@ -16,10 +16,10 @@ def sweep_mesh_resolution():
 
     # --- 网格列表 & 对应元素数
     mesh_paths = [
-        '/home/akinesia112/diff_pd_public/asset/mesh/armadillo_low_res.obj',
-        '/home/akinesia112/diff_pd_public/asset/mesh/armadillo_mid1.obj',
-        '/home/akinesia112/diff_pd_public/asset/mesh/armadillo_mid2.obj',
-        '/home/akinesia112/diff_pd_public/asset/mesh/armadillo_high_res.obj',
+        '../../asset/mesh/armadillo_low_res.obj',
+        '../../asset/mesh/armadillo_mid1.obj',
+        '../../asset/mesh/armadillo_mid2.obj',
+        '../../asset/mesh/armadillo_high_res.obj',
     ]
     element_counts = [4022, 7681, 11340, 15000]
 

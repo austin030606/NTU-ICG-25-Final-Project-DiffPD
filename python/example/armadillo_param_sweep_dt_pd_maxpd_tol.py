@@ -23,7 +23,7 @@ def run_experiments():
         'init_rotate_angle': 0,
         'state_force_parameters': [0, 0, 0],
         'spp': 4,
-        'mesh_file': "/home/akinesia112/diff_pd_public/asset/mesh/armadillo_high_res.obj"
+        'mesh_file': "../../asset/mesh/armadillo_high_res.obj"
     }
     env = ArmadilloEnv3d(seed, out, common_cfg)
 
