@@ -2,7 +2,7 @@
 - Ubuntu 18.04
 - (Mini)conda 4.7.12 or higher
 - GCC 7.5 (Other versions might work but we tested the codebase with 7.5 only)
-- open3d=0.18.0 (conda install)
+- open3d=0.18.0 (conda install, pip might fail)
 
 ## Installation
 ```
