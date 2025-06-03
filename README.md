@@ -15,7 +15,7 @@ Navigate to the `python/example` path and run `python [example_name].py` where t
 
 For more details about the python examples, you may navigate to the original DiffPD github repository at https://github.com/mit-gfx/diff_pd_public.
 
-To run the examples in our report, you can run the `run_examples.sh` script inside `python/example`, ro run the following commands individually:
+To run the examples in our report, you can run the `run_examples.sh` script inside `python/example`, or run the following commands individually:
 ```
 python armadillo_3d.py > armadillo_3d_log_final.txt
 python plant_3d_neo.py > plant_3d_neo_log_final.txt
@@ -36,4 +36,9 @@ python armadillo_param_sweep_dt_pd_maxpd_tol.py
 python generate_intermediate_meshes.py
 # Runtime vs Mesh Resolution
 python armadillop_mesh_resolution_vs_runtime_error.py
+```
+
+To generate the figures of Duck3d example:
+```
+python python/example/print_duck_fig.py
 ```
