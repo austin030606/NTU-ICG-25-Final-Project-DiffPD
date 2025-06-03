@@ -21,6 +21,7 @@ python armadillo_3d.py > armadillo_3d_log_final.txt
 python plant_3d_neo.py > plant_3d_neo_log_final.txt
 python duck_3d_neo.py > duck_3d_neo_log_final.txt
 ```
+The above commands may take a long time to run, so here is a [link](https://drive.google.com/file/d/1TVIK0p6gPkambhtDk_X_kSMunJpycAZO/view?usp=drive_link) to a zip file containing an example of the results 
 
 To run the experiments in our reports:
 ```
