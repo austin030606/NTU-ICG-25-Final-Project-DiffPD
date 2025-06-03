@@ -44,3 +44,25 @@ After running the Duck3D example, you can generate the corresponding figures usi
 ```
 python python/example/print_duck_fig.py
 ```
+
+
+## Files Added/Modified
+Below is a list a files that we either modified from the original DiffPD source code or added ourselves:
+- `cpp/core/include/fem/deformable.h`
+- `cpp/core/include/solver/deformable_preconditioner.h`
+- `cpp/core/src/fem/deformable.cpp`
+- `cpp/core/src/fem/deformable_newton_forward.cpp`
+- `cpp/core/src/fem/deformable_projective_dynamics_backward.cpp`
+- `python/example/armadillo_dt_sweep.py`
+- `python/example/armadillo_param_sweep_dt_pd_maxpd_tol.py`
+- `python/example/armadillop_mesh_resolution_vs_runtime_error.py`
+- `python/example/generate_intermediate_meshes.py`
+- `asset/mesh/armadillo_mid1.obj`
+- `asset/mesh/armadillo_mid2.obj`
+- `python/example/armadillo_3d.py`
+- `python/example/duck_3d_neo.py`
+- `python/example/plant_3d_neo.py`
+- `python/py_diff_pd/env/duck_env_3d_neo.py`
+- `python/py_diff_pd/env/env_base.py`
+- `python/py_diff_pd/env/plant_env_3d_neo.py`
+- `python/example/print_duck_fig.py`
