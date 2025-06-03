@@ -350,17 +350,17 @@ const SparseMatrix Deformable<vertex_dim, element_dim>::ProjectedNewtonMatrix(co
             Eigen::Matrix<real, element_dim * vertex_dim, element_dim * vertex_dim> D = eig.eigenvalues().asDiagonal();
 
             bool all_positive = true;
-            for (int i = 0; i < H_i.rows(); ++i) {
+            for (int k = 0; k < H_i.rows(); ++k) {
                 if (use_abs) {
                     // PrintInfo("use abs");
-                    if (D(i, i) < 0) {
-                        D(i, i) = -D(i, i);
+                    if (D(k, k) < 0) {
+                        D(k, k) = -D(k, k);
                         all_positive = false;
                     }
                 } else {
                     // PrintInfo("use clamp");
-                    if (D(i, i) < eps) {
-                        D(i, i) = eps;
+                    if (D(k, k) < eps) {
+                        D(k, k) = eps;
                         all_positive = false;
                     }
                 }
