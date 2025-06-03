@@ -21,3 +21,18 @@ python armadillo_3d.py > armadillo_3d_log_final.txt
 python plant_3d_neo.py > plant_3d_neo_log_final.txt
 python duck_3d_neo.py > duck_3d_neo_log_final.txt
 ```
+
+To run the experiments in our reports:
+```
+# Exp:1 Loss vs. Time Steps
+python armadillo_dt_sweep.py
+
+# Exp:2 Tolerance (\texttt{rel\_tol} \& \texttt{abs\_tol}) vs Loss Drift \& Runtime
+python armadillo_param_sweep_dt_pd_maxpd_tol.py
+
+# Exp:3 Runtime vs Mesh Resolution
+# Generate Two Intermediate Meshes
+python generate_intermediate_meshes.py
+# Runtime vs Mesh Resolution
+python armadillop_mesh_resolution_vs_runtime_error.py
+```
