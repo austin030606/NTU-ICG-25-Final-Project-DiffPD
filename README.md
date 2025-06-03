@@ -38,7 +38,7 @@ python generate_intermediate_meshes.py
 python armadillop_mesh_resolution_vs_runtime_error.py
 ```
 
-To generate the figures of Duck3d example:
+After running the Duck3D example, you can generate the corresponding figures using:
 ```
 python python/example/print_duck_fig.py
 ```
