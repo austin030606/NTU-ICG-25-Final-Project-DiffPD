@@ -1,4 +1,6 @@
 # NTU ICG 25 Final Project
+Disclaimer
+The code included in the files in this GitHub repository are sourced from publicly available publications/code presented at DiffPD: Differentiable Projective Dynamics (ACM Transactions on Graphics/SIGGRAPH 2022). The project are used solely for academic communication and educational purposes. No commercial use is intended or involved.
 
 ## Recommended systems
 - Ubuntu 18.04
