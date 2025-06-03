@@ -1,3 +1,5 @@
+# NTU ICG 25 Final Project
+
 ## Recommended systems
 - Ubuntu 18.04
 - (Mini)conda 4.7.12 or higher
@@ -67,5 +69,6 @@ Below is a list a files that we either modified from the original DiffPD source 
 - `python/py_diff_pd/env/plant_env_3d_neo.py`
 - `python/example/print_duck_fig.py`
 
-For more details, you may visit our github repo and browse our commit history at: https://github.com/austin030606/modified-DiffPD
-Our modifications consists of all the commits after May 31, 2025.
+For more details, you may visit our github repo and browse our commit history at: https://github.com/austin030606/NTU-ICG-25-Final-Project-DiffPD
+
+Our modifications consists of all the commits made after May 31, 2025.
