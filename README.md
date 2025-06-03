@@ -66,3 +66,6 @@ Below is a list a files that we either modified from the original DiffPD source 
 - `python/py_diff_pd/env/env_base.py`
 - `python/py_diff_pd/env/plant_env_3d_neo.py`
 - `python/example/print_duck_fig.py`
+
+For more details, you may visit our github repo and browse our commit history at: https://github.com/austin030606/modified-DiffPD
+Our modifications consists of all the commits after May 31, 2025.
