@@ -32,6 +32,7 @@ python armadillo_dt_sweep.py
 python armadillo_param_sweep_dt_pd_maxpd_tol.py
 
 # Exp:3 Runtime vs Mesh Resolution
+conda install -c conda-forge open3d=0.18.0
 # Generate Two Intermediate Meshes
 python generate_intermediate_meshes.py
 # Runtime vs Mesh Resolution
